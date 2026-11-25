@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RegexLens | Explain and test any regex, in English or Arabic</title>
+<meta name="description" content="Paste a regex, see live match highlighting, capture groups, and a plain-English or Arabic explanation, token by token. Runs in your browser.">
+<meta property="og:title" content="RegexLens">
+<meta property="og:description" content="Explain and test any JavaScript regex with live highlighting. English and Arabic. Offline.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="og.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230d0b14'/%3E%3Ctext x='50' y='70' font-size='58' text-anchor='middle' fill='%23ff3d9a' font-family='monospace'%3E.*%3C/text%3E%3C/svg%3E">
+<style>
+:root{--bg:#0d0b14;--panel:#17132299;--line:#2b2440;--pink:#ff3d9a;--cyan:#38e8ff;--tx:#e9e4f5;--dim:#8a82a6}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(900px 500px at 85% -10%,#3a1250 0,transparent 60%),var(--bg);color:var(--tx);font:16px/1.5 ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;min-height:100vh}
+.wrap{max-width:980px;margin:0 auto;padding:26px 18px 50px}
+header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:22px}
+h1{margin:0;font-size:28px;letter-spacing:-.5px}
+h1 b{color:var(--pink)}
+.sub{color:var(--dim);font-size:13px}
+.lang button{background:none;border:1px solid var(--line);color:var(--dim);padding:5px 12px;cursor:pointer;font:inherit;font-size:13px}
+.lang button.on{color:var(--bg);background:var(--cyan);border-color:var(--cyan)}
+.box{border:1px solid var(--line);background:var(--panel);padding:16px;margin-bottom:16px;backdrop-filter:blur(4px)}
+.box h2{margin:0 0 10px;font-size:12px;text-transform:uppercase;letter-spacing:2px;color:var(--dim);font-weight:600}
+.re{display:flex;align-items:center;border:1px solid var(--pink);background:#0a0810;padding:0 12px}
+.re span{color:var(--pink);font-size:22px}
+.re input{flex:1;background:none;border:0;color:var(--tx);font:inherit;font-size:20px;padding:12px 8px;outline:0;min-width:0}
+.re input.flags{flex:0 0 70px;color:var(--cyan);font-size:18px}
+.err{color:#ff7a7a;font-size:13px;min-height:20px;margin-top:6px}
+textarea{width:100%;min-height:140px;background:#0a0810;border:1px solid var(--line);color:transparent;caret-color:var(--tx);font:inherit;padding:12px;resize:vertical;position:relative;z-index:2;background:transparent;line-height:1.6}
+.hl{position:absolute;inset:0;padding:12px;white-space:pre-wrap;word-wrap:break-word;color:var(--tx);line-height:1.6;pointer-events:none;overflow:hidden}
+.hl mark{background:#ff3d9a55;color:inherit;border-bottom:2px solid var(--pink)}
+.hl mark.alt{background:#38e8ff44;border-color:var(--cyan)}
+.hlbox{position:relative;border:1px solid var(--line);background:#0a0810}
+.stat{color:var(--cyan);font-size:13px;margin-top:8px}
+.tok{display:flex;gap:12px;padding:5px 0;border-bottom:1px solid #ffffff0d}
+.tok code{flex:0 0 150px;color:var(--pink);word-break:break-all}
+.tok span{color:var(--tx)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{text-align:left;padding:5px 8px;border-bottom:1px solid #ffffff0d;vertical-align:top;word-break:break-all}
+th{color:var(--dim);font-weight:600}
+.ex a{color:var(--cyan);cursor:pointer;margin-right:14px;font-size:13px;text-decoration:underline dotted}
+footer{color:var(--dim);font-size:12px;text-align:center;margin-top:24px}
+footer a{color:var(--cyan)}
+[dir=rtl] .tok code{direction:ltr;text-align:left}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<div><h1><b>/</b>RegexLens<b>/</b></h1><div class="sub" id="sub">Explain and test a regex. Nothing leaves your browser.</div></div>
+<div class="lang"><button id="en" class="on">EN</button><button id="ar">عربي</button></div>
+</header>
+<div class="box">
+<h2 id="h-re">Pattern</h2>
+<div class="re"><span>/</span><input id="re" spellcheck="false" autocomplete="off" value="(?&lt;user&gt;[\w.+-]+)@(?&lt;host&gt;[\w-]+)\.(?:com|org|net)"><span>/</span><input id="fl" class="flags" spellcheck="false" value="g"></div>
+<div class="err" id="err"></div>
+<div class="ex" id="ex"></div>
+</div>
+<div class="box">
+<h2 id="h-txt">Test text</h2>
+<div class="hlbox"><div class="hl" id="hl"></div><textarea id="txt" spellcheck="false">Contact: mostafa@example.com, sara.k@uni.edu.eg, bad@site, team+dev@mail.org</textarea></div>
+<div class="stat" id="stat"></div>
+</div>
+<div class="box"><h2 id="h-exp">Explanation</h2><div id="exp"></div></div>
+<div class="box"><h2 id="h-mt">Matches</h2><div id="mt"></div></div>
+<footer>RegexLens · JavaScript regex flavor · <a href="https://github.com/mostaaafaomran-ctrl/regexlens">GitHub</a></footer>
+</div>
+<script src="core.js"></script>
+<script>
+var $=function(i){return document.getElementById(i)},lang='en';
+var T={en:{sub:'Explain and test a regex. Nothing leaves your browser.',pat:'Pattern',txt:'Test text',exp:'Explanation',mt:'Matches',none:'No matches',m:' match(es)',g:'group ',ex:'Examples: '},
+ar:{sub:'اشرح واختبر أي regex. مفيش حاجة بتطلع من المتصفح.',pat:'النمط',txt:'النص للتجربة',exp:'الشرح',mt:'النتايج',none:'مفيش نتايج',m:' نتيجة',g:'مجموعة ',ex:'أمثلة: '}};
+var EX=[['Email','[\\w.+-]+@[\\w-]+\\.[a-z]{2,}','gi'],['Egypt mobile','\\b01[0125]\\d{8}\\b','g'],['Hex color','#(?:[0-9a-f]{3}){1,2}\\b','gi'],['Date','(\\d{4})-(\\d{2})-(\\d{2})','g'],['Arabic word','[\\u0600-\\u06FF]+','g']];
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function run(){
+  var src=$('re').value,fl=$('fl').value,txt=$('txt').value,t=T[lang];
+  $('err').textContent='';
+  var res=[];
+  try{new RegExp(src,fl);res=RegexLens.matches(src,fl,txt)}catch(e){$('err').textContent=e.message;$('exp').innerHTML='';$('mt').innerHTML='';$('hl').innerHTML=esc(txt);$('stat').textContent='';return}
+  var h='',p=0;
+  res.forEach(function(m,i){if(m.text===''){return}h+=esc(txt.slice(p,m.index))+'<mark'+(i%2?' class="alt"':'')+'>'+esc(m.text)+'</mark>';p=m.index+m.text.length});
+  $('hl').innerHTML=h+esc(txt.slice(p))+'\n';
+  $('stat').textContent=res.length+t.m;
+  var ex=RegexLens.explain(src,lang==='ar');
+  $('exp').innerHTML=ex.map(function(x){return '<div class="tok" style="padding-inline-start:'+x.depth*18+'px"><code>'+esc(x.tok)+'</code><span>'+esc(x.txt)+'</span></div>'}).join('')||'—';
+  if(!res.length){$('mt').textContent=t.none;return}
+  var rows=res.slice(0,200).map(function(m,i){
+    var g=m.groups.map(function(v,k){return t.g+(k+1)+': '+esc(String(v))}).join('<br>');
+    return '<tr><td>'+(i+1)+'</td><td>'+m.index+'</td><td>'+esc(m.text)+'</td><td>'+g+'</td></tr>'}).join('');
+  $('mt').innerHTML='<table><tr><th>#</th><th>index</th><th>match</th><th>groups</th></tr>'+rows+'</table>';
+}
+function setLang(l){lang=l;var t=T[l];document.documentElement.dir=l==='ar'?'rtl':'ltr';$('en').className=l==='en'?'on':'';$('ar').className=l==='ar'?'on':'';
+  $('sub').textContent=t.sub;$('h-re').textContent=t.pat;$('h-txt').textContent=t.txt;$('h-exp').textContent=t.exp;$('h-mt').textContent=t.mt;
+  $('ex').innerHTML=t.ex+EX.map(function(e,i){return '<a data-i="'+i+'">'+e[0]+'</a>'}).join('');
+  document.querySelectorAll('.ex a').forEach(function(a){a.onclick=function(){var e=EX[a.dataset.i];$('re').value=e[1];$('fl').value=e[2];run()}});
+  run()}
+['re','fl','txt'].forEach(function(i){$(i).addEventListener('input',run)});
+$('txt').addEventListener('scroll',function(){$('hl').scrollTop=$('txt').scrollTop});
+$('en').onclick=function(){setLang('en')};$('ar').onclick=function(){setLang('ar')};
+setLang('en');
+</script>
+</body>
+</html>
